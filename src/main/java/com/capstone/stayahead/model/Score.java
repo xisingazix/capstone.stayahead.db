@@ -32,7 +32,6 @@ public class Score {
     }
 
     public Score() {
-
     }
 
     public Users getUsers() {

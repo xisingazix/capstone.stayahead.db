@@ -1,5 +1,6 @@
 package com.capstone.stayahead.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,6 +32,7 @@ public class Users {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore // prevent infinite JSON response loop
     @OneToOne(
             mappedBy = "users",
             cascade = CascadeType.ALL,
