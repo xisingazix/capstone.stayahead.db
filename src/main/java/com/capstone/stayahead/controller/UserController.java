@@ -5,6 +5,7 @@ import com.capstone.stayahead.model.Score;
 import com.capstone.stayahead.model.Users;
 import com.capstone.stayahead.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable("id")Integer id, @RequestBody Users users)
+    public ResponseEntity<Object> update(@PathVariable("id") @NotNull Integer id, @RequestBody Users users)
                                         throws ResourceNotFoundException {
         try {
             Users _users = userService.findById(id)
@@ -63,13 +64,12 @@ public class UserController {
     // End-point to View users by Id( path variable)
     // Global exception handling
     @GetMapping("/{id}")
-    public ResponseEntity<Object> byId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
+    public ResponseEntity<Object> byId(@PathVariable("id") @NotNull Integer id) throws ResourceNotFoundException{
 
         Users _users = userService.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
         return new ResponseEntity<>(_users, HttpStatus.OK) ; //200
     }
-
 
 }

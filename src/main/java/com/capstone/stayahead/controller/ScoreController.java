@@ -5,6 +5,7 @@ import com.capstone.stayahead.model.Score;
 import com.capstone.stayahead.model.Users;
 import com.capstone.stayahead.service.ScoreService;
 import com.capstone.stayahead.service.UserService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +73,8 @@ public class ScoreController {
     // End-point to View  score of users by Id( path variable)
     // Global exception handling
     @GetMapping("/{id}")
-    public ResponseEntity<Object> byId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
+    public ResponseEntity<Object> byId(@PathVariable("id") @NotNull Integer id) throws ResourceNotFoundException{
+
         Score _score = scoreService.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Item not found"));
         return new ResponseEntity<>(_score, HttpStatus.OK) ; //200
