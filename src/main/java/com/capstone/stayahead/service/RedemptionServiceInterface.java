@@ -1,6 +1,7 @@
 package com.capstone.stayahead.service;
 
 import com.capstone.stayahead.model.Redemption;
+import com.capstone.stayahead.model.RedemptionId;
 import com.capstone.stayahead.model.Score;
 
 import java.util.List;
@@ -10,9 +11,9 @@ public interface RedemptionServiceInterface {
 
     public void save(Redemption redemption);
 
-    public void deleteById(Integer id);
+    public void deleteById(RedemptionId redemptionId);
 
     public List<Redemption> findAll();
 
-    public Optional<Redemption> findById(Integer id);
+
 }

@@ -1,6 +1,11 @@
 package com.capstone.stayahead.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,11 +14,11 @@ public class Redemption {
     @EmbeddedId
     private RedemptionId redemptionId;
 
-
     @ManyToOne(cascade = CascadeType.ALL)
     // TODO : cyclical dependencies from vouchers
     @MapsId("voucherId")
     @JoinColumn(name = "voucher_id", nullable = false)
+    @NotNull(message = "Voucher Id required")
     private Voucher voucher;
 
 
@@ -21,18 +26,48 @@ public class Redemption {
     // TODO : cyclical dependencies from users
     @MapsId("usersId")
     @JoinColumn(name = "users_id", nullable = false)
+    @NotNull(message = "User Id required")
     private Users users;
 
+
     @Column(name = "redeem_date")
-    private LocalDateTime redeemDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "ddMMyyyy")
+    private LocalDate redeemDate;
 
     public Redemption() {
     }
 
-    public Redemption(RedemptionId redemptionId, Voucher voucher, Users users, LocalDateTime redeemDate) {
-        this.redemptionId = redemptionId;
+    public Redemption(Voucher voucher, Users users) {
         this.voucher = voucher;
         this.users = users;
-        this.redeemDate = redeemDate;
     }
+
+    public Redemption(RedemptionId redemptionId) {
+        this.redemptionId = redemptionId;
+    }
+
+    public RedemptionId getRedemptionId() {
+        return redemptionId;
+    }
+
+    public void setRedemptionId(RedemptionId redemptionId) {
+        this.redemptionId = redemptionId;
+    }
+
+    public Voucher getVoucher() {
+        return voucher;
+    }
+
+    public void setVoucher(Voucher voucher) {
+        this.voucher = voucher;
+    }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
 }

@@ -1,13 +1,13 @@
 package com.capstone.stayahead.model;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 public class RedemptionId implements Serializable {
-
 
     private  Integer usersId;
 
@@ -21,7 +21,6 @@ public class RedemptionId implements Serializable {
         this.voucherId = voucherId;
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(usersId, voucherId);
@@ -34,11 +33,10 @@ public class RedemptionId implements Serializable {
         if(obj == null || getClass()!= obj.getClass())
             return false;
         RedemptionId that = (RedemptionId) obj;
-        if(!usersId.equals(that.usersId))
-            return false;
-
-        return voucherId.equals(that.voucherId);
+            return voucherId.equals(that.voucherId)&&
+                    usersId.equals(that.usersId);
     }
+
 
     public Integer getUsersId() {
         return usersId;

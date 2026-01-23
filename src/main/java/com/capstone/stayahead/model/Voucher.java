@@ -47,6 +47,14 @@ public class Voucher {
         this.terms = terms;
     }
 
+    public Voucher(Sponsor sponsor, String name, String description, String terms, LocalDate expiryDate) {
+        this.sponsor = sponsor;
+        this.name = name;
+        this.description = description;
+        this.terms = terms;
+        this.expiryDate = expiryDate;
+    }
+
     public Integer getId() {
         return id;
     }
