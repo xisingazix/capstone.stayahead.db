@@ -15,7 +15,7 @@ public class Sponsor {
     private Integer id;
 
     @Column(nullable = false)
-    @NotNull(message = "Name must not be empty.")
+    @NotNull(message = "Name must not be empty")
     @Size(min = 2 , message = "Name must be 2 characters or more.")
     private String name;
 

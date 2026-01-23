@@ -1,25 +1,25 @@
 package com.capstone.stayahead.model;
 
 import jakarta.persistence.*;
-import org.apache.catalina.User;
-
 import java.time.LocalDateTime;
 
 @Entity
 public class Redemption {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @EmbeddedId
+    private RedemptionId redemptionId;
 
-    @OneToOne
+
+    @ManyToOne(cascade = CascadeType.ALL)
     // TODO : cyclical dependencies from vouchers
+    @MapsId("voucherId")
     @JoinColumn(name = "voucher_id", nullable = false)
     private Voucher voucher;
 
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     // TODO : cyclical dependencies from users
+    @MapsId("usersId")
     @JoinColumn(name = "users_id", nullable = false)
     private Users users;
 
@@ -29,19 +29,10 @@ public class Redemption {
     public Redemption() {
     }
 
-    public Voucher getVoucher() {
-        return voucher;
-    }
-
-    public void setVoucher(Voucher voucher) {
+    public Redemption(RedemptionId redemptionId, Voucher voucher, Users users, LocalDateTime redeemDate) {
+        this.redemptionId = redemptionId;
         this.voucher = voucher;
-    }
-
-    public Users getUsers() {
-        return users;
-    }
-
-    public void setUsers(Users users) {
         this.users = users;
+        this.redeemDate = redeemDate;
     }
 }

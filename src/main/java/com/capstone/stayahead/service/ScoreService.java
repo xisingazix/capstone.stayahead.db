@@ -28,8 +28,6 @@ public class ScoreService implements ScoreServiceInterface{
 
     @Override
     public List<Score> findAll() {
-        Sort sort = Sort.by("score").descending()
-                .and(Sort.by("updated_at")).ascending();
         return scoreRepository.findAll();
     }
 

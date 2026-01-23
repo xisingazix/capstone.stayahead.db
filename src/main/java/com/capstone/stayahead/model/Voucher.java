@@ -1,9 +1,12 @@
 package com.capstone.stayahead.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,8 +16,10 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
     @ManyToOne
     @JoinColumn(name = "sponsor_id", nullable = false)
+    @NotNull( message = "Please enter a valid id  \"sponsor\" : {\"id\": 1} ")
     private Sponsor sponsor;
 
     private String name;
@@ -23,12 +28,14 @@ public class Voucher {
 
     private String terms;
 
+    @CreationTimestamp
+    @Column(name = "issued_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "ddMMyyyy")
+    private LocalDate issueDate;
 
-    @Column(name = "issue_at", nullable = false)
-    private LocalDateTime issueDate;
-
-    @Column(name = "expire_at", nullable = false)
-    private LocalDateTime expiryDate;
+    @Column(name = "expire_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "ddMMyyyy")
+    private LocalDate expiryDate;
 
     public Voucher() {
     }
@@ -80,19 +87,19 @@ public class Voucher {
         this.terms = terms;
     }
 
-    public LocalDateTime getIssueDate() {
+    public LocalDate getIssueDate() {
         return issueDate;
     }
 
-    public void setIssueDate(LocalDateTime issueDate) {
+    public void setIssueDate(LocalDate issueDate) {
         this.issueDate = issueDate;
     }
 
-    public LocalDateTime getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(LocalDateTime expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 }

@@ -29,10 +29,11 @@ public class UserController {
         return new ResponseEntity<>("User created", HttpStatus.CREATED) ; //201
     }
 
+    //Get user by id
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable("id") Integer id, @RequestBody Users users)
                                         throws ResourceNotFoundException {
-        try {
+
             Users _users = userService.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
             _users.setFirstName(users.getFirstName());
@@ -40,27 +41,21 @@ public class UserController {
             _users.setEmail(users.getEmail());
 
             userService.save(_users);
-            return new ResponseEntity<>("User updated", HttpStatus.NO_CONTENT); //201
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-        }
+            return new ResponseEntity<>("User updated", HttpStatus.OK); //201
+
     }
 
     // End-point to View all users
     @GetMapping("")
     public ResponseEntity<Object> all(Users users) throws ResourceNotFoundException{
-        try {
+
             List<Users> usersList = userService.findAll();
             if(usersList.isEmpty()){
                 throw new ResourceNotFoundException("Items not found.");
             }
             return new ResponseEntity<>(userService.findAll(), HttpStatus.OK); //200
-        }catch(ResourceNotFoundException e){
-            return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-        }
+
     }
-
-
     // End-point to View users by Id( path variable)
     // Global exception handling
     @GetMapping("/{id}")

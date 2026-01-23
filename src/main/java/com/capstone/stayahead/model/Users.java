@@ -46,14 +46,14 @@ public class Users {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @JsonIgnore // prevent infinite JSON response loop
+     // prevent infinite JSON response loop
     @OneToOne(
             mappedBy = "users",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private Score score;
+    private  Score score;
 
     public Users(){
 
@@ -73,9 +73,7 @@ public class Users {
             this.score = new Score(this, 0);
         }
     }
-    public Score getScore() {
-        return score;
-    }
+
 
     public void setScore(Score score) {
         this.score = score;

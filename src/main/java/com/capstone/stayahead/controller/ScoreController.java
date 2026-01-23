@@ -33,7 +33,6 @@ public class ScoreController {
             @PathVariable("id") Integer usersId,
             @RequestBody Score score)throws ResourceNotFoundException{
         // Ensure user exists first, save compare score
-        try {
             // Check customer exists
             Score _score = scoreService.findById(usersId)
                                     .orElseThrow(()-> new ResourceNotFoundException("Item not found")); // for cases customer not exists
@@ -41,14 +40,9 @@ public class ScoreController {
             if ( _score.getScore() < score.getScore()) {
                 _score.setScore(score.getScore());
                 scoreService.save(_score);
-                return new ResponseEntity<>("New HighScore updated", HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(scoreService.findById(usersId), HttpStatus.OK);
             }
-
-            return new ResponseEntity<>("No New HighScore set ,Please try again", HttpStatus.NO_CONTENT);
-
-        }catch(Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+            return new ResponseEntity<>("No New HighScore set ,Please try again", HttpStatus.OK);
     }
 
     // End-point to View all score
@@ -61,7 +55,6 @@ public class ScoreController {
         return new ResponseEntity<>(scoreList, HttpStatus.OK) ; //200
     }
     // End-point to view Leaderboard
-    // Global exception handling
     @GetMapping("/top5")
     public ResponseEntity<Object> topFiveScore()throws ResourceNotFoundException{
         List<Score> scoreList =  scoreService.getTopFiveHighScore();
@@ -71,7 +64,6 @@ public class ScoreController {
     }
 
     // End-point to View  score of users by Id( path variable)
-    // Global exception handling
     @GetMapping("/{id}")
     public ResponseEntity<Object> byId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
 
