@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,8 +52,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   WebRequest request) {
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach((err)->{
-            String field = ((FieldError) err).getField();
+        ex.getBindingResult().getFieldErrors().forEach((err)->{ // revised to getFieldErrors()
+            String field = err.getField();                      // call the error's field
             String message = err.getDefaultMessage();
             errors.put(field, message);
         });
@@ -71,5 +72,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.put("error:", ex.getMessage());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(NoResourceFoundException ex,
+                                                                    HttpHeaders headers,
+                                                                    HttpStatusCode status,
+                                                                    WebRequest request) {
+        // Re-using ResponseNotFoundException for the purpose of
+        // catching exception when no path variable is supplied
+        ResourceNotFoundException resourceNotFoundException = new ResourceNotFoundException("Resource not found");
+
+        Map<String, String> errorResponse = new HashMap<>();
+
+        errorResponse.put("error", resourceNotFoundException.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 }
