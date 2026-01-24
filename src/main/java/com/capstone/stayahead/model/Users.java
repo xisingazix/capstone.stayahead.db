@@ -1,6 +1,7 @@
 package com.capstone.stayahead.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -53,6 +54,7 @@ public class Users {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
+    @JsonManagedReference
     private  Score score;
 
     public Users(){
@@ -67,11 +69,16 @@ public class Users {
 
     }
 
+
     @PrePersist
     public void createScoreIfNil(){
         if(this.score == null){
             this.score = new Score(this, 0);
         }
+    }
+
+    public Score getScore() {
+        return score;
     }
 
 
@@ -117,5 +124,21 @@ public class Users {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

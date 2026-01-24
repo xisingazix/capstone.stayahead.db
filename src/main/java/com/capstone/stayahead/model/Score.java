@@ -1,5 +1,6 @@
     package com.capstone.stayahead.model;
 
+    import com.fasterxml.jackson.annotation.JsonBackReference;
     import jakarta.persistence.*;
     import org.hibernate.annotations.OnDelete;
     import org.hibernate.annotations.OnDeleteAction;
@@ -17,6 +18,7 @@
         @MapsId                                 // Ensure Id same as user id
         @JoinColumn(name = "user_id")           // Foreign Key user_id
         @OnDelete(action = OnDeleteAction.CASCADE)
+        @JsonBackReference
         private  Users users;
 
         @Column(nullable = false, updatable = true)
@@ -58,5 +60,11 @@
             this.id = id;
         }
 
+        public LocalDateTime getUpdatedAt() {
+            return updatedAt;
+        }
 
+        public void setUpdatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
+        }
     }

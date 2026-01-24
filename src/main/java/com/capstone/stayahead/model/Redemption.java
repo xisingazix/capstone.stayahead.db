@@ -26,7 +26,7 @@ public class Redemption {
 
 
     @ManyToOne(cascade = CascadeType.ALL)
-    // TOcheck : cyclical dependencies from users
+    // TOcheck : cyclical dependencies from users,
     @MapsId("usersId")
     @JoinColumn(name = "users_Id", nullable = false)
     @NotNull(message = "User Id required")
