@@ -93,10 +93,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        String message = "Data integrity violation(Email address is already in use)";
+        // Default generic message
+        String message = "Data integrity violation.";
+
+        // Get the deepest root cause message
+        String rootMsg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
+
+        // Check if the error is specifically about the 'email' unique constraint
+        // Note: The string "email" depends on your database column name
+        if (rootMsg != null && rootMsg.toLowerCase().contains("email")) {
+            message = "Email address is already in use.";
+        } else if (rootMsg != null && rootMsg.toLowerCase().contains("foreign key")) {
+            message = "This operation cannot be completed because it is linked to other data.";
+        }
 
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", message);
+        // Optional: errorResponse.put("details", rootMsg); // Useful for debugging
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

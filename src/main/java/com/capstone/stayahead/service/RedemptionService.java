@@ -43,18 +43,25 @@ public class RedemptionService implements RedemptionServiceInterface{
         return redemptionRepository.findAll();
     }
 
-
-    public Optional<Redemption> findByRedemptionId(RedemptionId redemptionId) {
-        Integer userId = redemptionId.getUsersId();
-        Integer voucherId = redemptionId.getVoucherId();
-        return redemptionRepository.findByUsersIdAndVoucherId(userId,voucherId);
+    @Override
+    public Optional<Redemption> findById(RedemptionId redemptionId) {
+        return redemptionRepository.findById(redemptionId);
     }
-    public RedemptionId usersIdAndVoucherIdCheck(RedemptionId redemptionId) throws ResourceNotFoundException{
+
+
+    public List<Redemption> findByUserId(Users users) {
+        return redemptionRepository.findByUsersId(users.getId());
+    }
+    public List<Redemption> findByVoucherId(Voucher voucher) {
+        return redemptionRepository.findByVoucherId(voucher.getId());
+    }
+    public void usersIdAndVoucherIdCheck(RedemptionId redemptionId) throws ResourceNotFoundException{
         if (redemptionId.getUsersId() == null || userService.findById(redemptionId.getUsersId()).isEmpty())
             throw new ResourceNotFoundException("User not found");
         if (redemptionId.getVoucherId() == null || voucherService.findById(redemptionId.getVoucherId()).isEmpty())
             throw new ResourceNotFoundException("Voucher not found");
-        return  redemptionId;
-
+    }
+    public List<Redemption> findByOptionalIds ( Integer userId , Integer voucherId){
+        return redemptionRepository.findByCustomCriteria(userId, voucherId);
     }
 }

@@ -9,12 +9,14 @@ import com.capstone.stayahead.service.VoucherService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,10 +24,10 @@ import java.util.Optional;
 public class RedemptionController {
 
     @Autowired
-    UserService userService;
+    VoucherService voucherService;
 
     @Autowired
-    VoucherService voucherService;
+    UserService userService;
 
     @Autowired
     RedemptionService redemptionService;
@@ -33,20 +35,63 @@ public class RedemptionController {
     @PostMapping("")
     public ResponseEntity<Object> save(@Valid @RequestBody RedemptionId redemptionId)
                                         throws ResourceNotFoundException {
-        if (redemptionId.getUsersId() == null || userService.findById(redemptionId.getUsersId()).isEmpty())
-            throw new ResourceNotFoundException("UserId not found");
-        if (redemptionId.getVoucherId() == null || voucherService.findById(redemptionId.getVoucherId()).isEmpty())
-            throw new ResourceNotFoundException("VoucherId not found");
-        Optional<Redemption> redeemed = redemptionService.findByRedemptionId(redemptionId);
-        if(redeemed.isPresent())throw  new ResourceNotFoundException("Voucher has been redeemed");
-
+        // Check for Null Entry
+        if(redemptionId.getUsersId() == null || redemptionId.getVoucherId() == null )
+            throw new ResourceNotFoundException("Missing Entry");
+        // Check User table for user
+        Users users = userService.findById(redemptionId.getUsersId())
+                .orElseThrow(()->new ResourceNotFoundException("User not found"));
+        // Check Voucher table for voucher
+        Voucher voucher = voucherService.findById(redemptionId.getVoucherId())
+                .orElseThrow(()->new ResourceNotFoundException("Voucher not found"));
+        // Check Redemption table if redeemed
+        if(redemptionService.findById(redemptionId).isPresent())
+            throw new ResourceNotFoundException("Voucher has been redeemed");
+        // Redeem voucher
         Redemption redemption = new Redemption(redemptionId);
         redemption.setRedemptionId(redemptionId);
-        redemption.setUsers(redemption.getUsers());
-        redemption.setVoucher(redemption.getVoucher());
+        redemption.setUsers(users);
+        redemption.setVoucher(voucher);
         redemptionService.save(redemption);
         return new ResponseEntity<>("Redemption Complete", HttpStatus.OK);
+    }
+    @DeleteMapping("")
+    public ResponseEntity<Object> deleteById(@Valid @RequestBody RedemptionId redemptionId)
+                                    throws ResourceNotFoundException{
+            Redemption redemption = redemptionService.findById(redemptionId)
+                                            .orElseThrow(()-> new ResourceNotFoundException("Voucher not found"));
+            redemptionService.deleteById(redemptionId);
+        return new ResponseEntity<>("Redemption Deleted", HttpStatus.OK);
 
+    }
+    // Not suppose to change primary key of a composite key,
+    // TODO: KIV what to do for PUTMapping
+//    @PutMapping("{id}")
+//    public ResponseEntity<Object> updateReede(@Valid @PathVariable("id") Users userid,
+//                                               @Valid @RequestBody RedemptionId redemptionId)
+//                                        throws ResourceNotFoundException {
+//        // Missing Entry check
+//        if(redemptionId.getUsersId() == null || redemptionId.getVoucherId() == null )
+//            throw new ResourceNotFoundException("Missing Entry");
+//        // check if redeemed ( in order to "update")
+//        Redemption redemption  =  redemptionService.findById(redemptionId)
+//                    .orElseThrow(()->new ResourceNotFoundException("Item not found"));
+//        // Update RedemptionId and userid in redemption
+//        RedemptionId _redemptionId = new RedemptionId(userid.getId(), redemptionId.getVoucherId());
+//        redemption.setRedemptionId(_redemptionId);
+//        redemption.setUsers(userid);
+//
+//        redemptionService.save(redemption);
+//        return new ResponseEntity<>("Redemption Updated", HttpStatus.OK);
+//        }
+//    }
+    @GetMapping("/search")
+    public ResponseEntity<List<Redemption>> findById(@RequestParam(value ="userid", required = false ) Integer userid ,
+                                            @RequestParam(value = "voucherid", required = false ) Integer voucherid ) {
+
+        List<Redemption> redemptions = redemptionService.findByOptionalIds(userid, voucherid);
+
+        return new ResponseEntity<>(redemptions, HttpStatus.OK);
     }
 
 }

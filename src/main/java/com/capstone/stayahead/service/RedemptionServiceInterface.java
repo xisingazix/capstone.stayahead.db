@@ -15,5 +15,6 @@ public interface RedemptionServiceInterface {
 
     public List<Redemption> findAll();
 
+    public Optional<Redemption> findById(RedemptionId redemptionId);
 
 }
