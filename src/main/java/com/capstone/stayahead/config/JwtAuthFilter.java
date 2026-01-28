@@ -1,7 +1,7 @@
 package com.capstone.stayahead.config;
 
-import com.example.springsecurity.service.UsersDetailsService;
-import com.example.springsecurity.util.JwtUtils;
+import com.capstone.stayahead.service.UsersDetailsService;
+import com.capstone.stayahead.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

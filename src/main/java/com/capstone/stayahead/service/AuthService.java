@@ -42,8 +42,7 @@ public class AuthService {
         }
 
         Users _users = Users.builder()
-                .userName(users.getUserName())
-                .email(users.getEmail())
+                .email(users.getUsername())
                 .password(passwordEncoder.encode((users.getPassword())))
                 .build();
 
@@ -53,7 +52,7 @@ public class AuthService {
     @Transactional
     public UserDto signIn(Users users) throws ResourceAccessException{
 
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(user.getEmail(), user.getPassword());
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(users.getUsername(), users.getPassword());
         Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);
 
         /**
@@ -72,8 +71,7 @@ public class AuthService {
         Long expirationTime = jwtUtils.extractExpirationTime(token);
 
         UserDto userDto = UserDto.builder()
-                .userName(_users.getUserName())  // Return athenticated user userName
-                .email(_users.getEmail())        // Return athenticated user email, akin to UserDetails.getUsername());
+                .email(_users.getUsername())  // Return athenticated user email
                 .token(token)                   // Return prepared token
                 .refreshToken(refreshToken)     // Return prepared refresh token
                 .expirationTime(expirationTime) // Return prepared expiry
@@ -91,20 +89,14 @@ public class AuthService {
         String currentEmail = authentication.getName();
 
         // Fetch the managed user
-        User existingUser = usersRepository.findByEmail(currentEmail)
+        Users existingUser = usersRepository.findByEmail(currentEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (users.getUserName() != null)
-            existingUser.setUserName(user.getUserName());
-
-        if (users.getEmail() != null)
-            existingUser.setEmail(user.getEmail());
+        // Username will never be not inserted
+        existingUser.setEmail(users.getUsername());
 
         if (users.getPassword() != null)
-            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
-
-//        if (users.getUserBio() != null)
-//            existingUser.setUserBio(user.getUserBio());
+            existingUser.setPassword(passwordEncoder.encode(users.getPassword()));
 
         // role should not be updated by an end user
 
@@ -126,9 +118,7 @@ public class AuthService {
 
         // package the data to return
         UserDto userDto = UserDto.builder()
-//                .userName(existingUser.getUserName())
-                .email(existingUser.getEmail())
-                .userBio(existingUser.getUserBio())
+                .email(existingUser.getUsername())
                 .userProfileImage(existingUser.getUserProfileImage())
                 .message("update success")
                 .build();

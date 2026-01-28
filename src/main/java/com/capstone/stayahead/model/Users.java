@@ -2,19 +2,19 @@ package com.capstone.stayahead.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter                             // Lombok generated getters (avoid @Data for entities; performance issues)
 @Setter
-public class Users {
+public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,9 +54,11 @@ public class Users {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
 
      // prevent infinite JSON response loop
     @OneToOne(
@@ -67,6 +69,18 @@ public class Users {
     )
     @JsonManagedReference
     private  Score score;
+
+
+
+    // Transferred frm user authentication
+    @ToString.Exclude                                      // Precision (field level): Prevents passwords from being printed
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Hide password in responses
+    @Column(nullable = false)
+    @NotBlank(message = "Password cannot be blank.")
+    private String password;
+
+    @Column
+    private String userProfileImage;
 
 
     public Users(String firstName, String lastName, String email, EnumRole role ) {
@@ -91,6 +105,70 @@ public class Users {
         score.setUsers(this);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {   // UserDetails.getUsername treats the email as the username
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    /**
+     *********************************************************************
+     @Builder eradicates overloading constructors
+     - Implement a Builder Pattern to chain syntax at instantiation
+     - The constructor is created with only the fields for the builder
+     - Note: Place @Builder here instead of at the top of the class
+      *********************************************************************
+     Example of using the builder pattern:
+     Users users = Users.builder()
+     .userName("John")
+     .email("john@email.com")
+     .role(EnumRole.ADMIN)
+     .build();
+     *********************************************************************
+     */
+    @Builder
+    public Users(
+                String email,
+                String password,
+                EnumRole role,
+                String userProfileImage)
+    {
+        this.email = email;
+        this.password = password;
+        this.role = (role == null) ? EnumRole.USER : role;
+        this.userProfileImage = userProfileImage;
+    }
 
 
 }

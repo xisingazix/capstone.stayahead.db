@@ -1,6 +1,6 @@
 package com.capstone.stayahead.config;
 
-import com.example.springsecurity.service.UsersDetailsService;
+import com.capstone.stayahead.service.UsersDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+
 
 @Configuration
 @EnableWebSecurity
@@ -53,7 +55,7 @@ public class SecurityConfig {
     // returns the user's information through a) UserDetailsService > a) UserRepository > c) connected to the DB
     // @Bean is not needed as there's a custom UserDetailsService beans, you need to define your own Authenticationprovider
     // Ref: https://github.com/spring-projects/spring-security/issues/13652
-//    @Bean
+    //    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(usersDetailsService);
