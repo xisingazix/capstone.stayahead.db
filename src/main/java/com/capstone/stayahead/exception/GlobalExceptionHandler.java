@@ -90,6 +90,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    protected ResponseEntity<Object> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex){
+
+        // store the various error responses in a HashMap, to returning as part of the exception handling response
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error:", ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {

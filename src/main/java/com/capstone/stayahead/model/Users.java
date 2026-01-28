@@ -7,12 +7,21 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "users")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter                             // Lombok generated getters (avoid @Data for entities; performance issues)
+@Setter
 public class Users {
 
     @Id
@@ -36,8 +45,10 @@ public class Users {
     )
     private String email;
 
-    @Column(nullable = true)
-    private String role;
+    @Column(name="role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Role cannot be blank.")
+    private EnumRole role = EnumRole.USER;
 
     // Automatically created when entity is created and updated
     @CreationTimestamp
@@ -57,11 +68,8 @@ public class Users {
     @JsonManagedReference
     private  Score score;
 
-    public Users(){
 
-    }
-
-    public Users(String firstName, String lastName, String email, String role ) {
+    public Users(String firstName, String lastName, String email, EnumRole role ) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -77,68 +85,12 @@ public class Users {
         }
     }
 
-    public Score getScore() {
-        return score;
-    }
-
 
     public void setScore(Score score) {
         this.score = score;
         score.setUsers(this);
     }
-    public Integer getId() {
-        return id;
-    }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
-    public String getFirstName() {
-        return firstName;
-    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
