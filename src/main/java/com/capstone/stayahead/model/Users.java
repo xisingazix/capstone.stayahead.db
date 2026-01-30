@@ -1,6 +1,6 @@
 package com.capstone.stayahead.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -140,6 +140,7 @@ public class Users implements UserDetails {
                 EnumRole role,
                 String firstName,
                 String lastName,
+                Score score,
                 String userProfileImage)
     {
         this.email = email;
@@ -147,6 +148,7 @@ public class Users implements UserDetails {
         this.role = (role == null) ? EnumRole.USER : role;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.score = score;
         this.userProfileImage = userProfileImage;
     }
 

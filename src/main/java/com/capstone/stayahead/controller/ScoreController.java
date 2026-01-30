@@ -2,52 +2,44 @@ package com.capstone.stayahead.controller;
 
 import com.capstone.stayahead.exception.ResourceNotFoundException;
 import com.capstone.stayahead.model.Score;
-import com.capstone.stayahead.model.Users;
 import com.capstone.stayahead.service.ScoreService;
-import com.capstone.stayahead.service.UserService;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/score")
+@RequestMapping("/stayahead")
 public class ScoreController {
 
     @Autowired
     ScoreService scoreService;
 
-    @Autowired
-    UserService userService;
-
-    // No postmapping, do not want scorecontroller to create userid
 
     // Local exception handling
     // Edit Personal score
-    @PutMapping("/{id}")
+    @PutMapping("/user/{id}/score")
     public ResponseEntity<Object> update(
             @PathVariable("id") Integer usersId,
             @RequestBody Score score)throws ResourceNotFoundException{
         // Ensure user exists first, save compare score
             // Check customer exists
-            Score _score = scoreService.findById(usersId)
-                                    .orElseThrow(()-> new ResourceNotFoundException("Item not found")); // for cases customer not exists
+        Score _score = scoreService.findById(usersId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             // Check if Score >  personal currentHighScore
             if ( _score.getScore() < score.getScore()) {
                 _score.setScore(score.getScore());
                 scoreService.save(_score);
-                return new ResponseEntity<>(scoreService.findById(usersId), HttpStatus.OK);
+                return new ResponseEntity<>( "Score Updated", HttpStatus.OK);
             }
             return new ResponseEntity<>("No New HighScore set ,Please try again", HttpStatus.OK);
     }
 
     // End-point to View all score
     // Global exception handling
-    @GetMapping("")
+    @GetMapping("public/score")
     public ResponseEntity<Object> all() throws ResourceNotFoundException {
         List<Score> scoreList =  scoreService.findAll();
         if( scoreList.isEmpty())
@@ -55,7 +47,7 @@ public class ScoreController {
         return new ResponseEntity<>(scoreList, HttpStatus.OK) ; //200
     }
     // End-point to view Leaderboard
-    @GetMapping("/top5")
+    @GetMapping("public/top5")
     public ResponseEntity<Object> topFiveScore()throws ResourceNotFoundException{
         List<Score> scoreList =  scoreService.getTopFiveHighScore();
         if( scoreList.isEmpty())
@@ -64,8 +56,9 @@ public class ScoreController {
     }
 
     // End-point to View  score of users by Id( path variable)
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> byId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
+    @GetMapping("/public/{id}/score")
+    public ResponseEntity<Object> byId(@PathVariable("id") Integer id)
+            throws ResourceNotFoundException{
 
         Score _score = scoreService.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Item not found"));

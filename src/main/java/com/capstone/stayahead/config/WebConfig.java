@@ -21,17 +21,18 @@ public class WebConfig implements WebMvcConfigurer {
     // "http://127.0.0.1:9876"
     private String strUrl = "http://";
 
-    public static final String API_ENDPOINT = "/api/v1";
+    public static final String API_ENDPOINT = "/stayahead";
+    // changing API_ENDPOINT will require to change all controller mapping and SecurityConfig string
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 
         String mainUrl = strUrl.concat(originHost).concat(":").concat(originPort);
 
-        // Allow CORS for api/v1/public/api
+        // Allow CORS for /stayahead/public/api
         registry.addMapping(API_ENDPOINT.concat("/public/**"))                 // Set the pathPattern
                 .allowedOrigins(mainUrl)                    // Restricted requests from: "http://227.0.0.1:${SERVER_PORT}"
-                .allowedMethods("GET", "POST")                              // Allowable HTTP methods
+                .allowedMethods("GET", "POST","OPTIONS")                              // Allowable HTTP methods
                 .allowCredentials(false)                                    // Credentials aren't typically needed for public API
                 .allowedHeaders(
                         "Content-Type",                                     // Media type of request body (e.g. application/json)
@@ -43,10 +44,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);                                              // Set max age (sec) for CORS response cached by browser
 
 
-        // Allow CORS for api/v1/user/api
+        // Allow CORS for /stayahead/user/api
         registry.addMapping(API_ENDPOINT.concat("/user/**"))            // Set the pathPattern
                 .allowedOrigins(mainUrl)                    // Restricted requests from: "http://227.0.0.1:${SERVER_PORT}"
-                .allowedMethods("GET", "POST", "PUT")                       // Allow ALL CRUD operations
+                .allowedMethods("GET", "POST", "PUT")                       // Allow  CRU operations
                 .allowCredentials(true)                                     // Allow credentials: cookies, auth headers, TLS certs
                 .allowedHeaders(
                         "Authorization",                                    // IMPORTANT: pass auth credentials (e.g. JWT, API keys)
@@ -60,6 +61,25 @@ public class WebConfig implements WebMvcConfigurer {
                         "Origin",                                           // Indicate domain from which the request originates
                         "Referer")                                          // Identify URL page that referred the request (source)
                 .maxAge(3600);                                              // Set max age (sec) for CORS response cached by browser
+
+        // Allow CORS for /stayahead/ADMIN/api
+        registry.addMapping(API_ENDPOINT.concat("/admin/**"))            // Set the pathPattern
+                .allowedOrigins(mainUrl)                    // Restricted requests from: "http://227.0.0.1:${SERVER_PORT}"
+                .allowedMethods("GET", "POST", "PUT", "DELETE")                       // Allow  CRUD operations
+                .allowCredentials(true)                                     // Allow credentials: cookies, auth headers, TLS certs
+                .allowedHeaders(
+                        "Authorization",                                    // IMPORTANT: pass auth credentials (e.g. JWT, API keys)
+                        "Content-Type",                                     // Media type of request body (e.g. application/json)
+                        "Accept",                                           // Expected response format (e.g. application/json)
+                        "X-Requested-With",                                 // Identify AJAX requests (optional, common in web apps)
+                        "Cache-Control",                                    // Controls cache behavior (e.g. no-cache)
+                        "Origin",                                              // Sent by browser enforce CORS policies
+                        "User-Agent",                                       // Identify sender (optional, for logging or analytics)
+                        "X-CSRF-Token",                                     // IMPORTANT: Token passed to validate against CSRF
+                        "Origin",                                           // Indicate domain from which the request originates
+                        "Referer")                                          // Identify URL page that referred the request (source)
+                .maxAge(3600);                                              // Set max age (sec) for CORS response cached by browser
+
     }
 
     @Override

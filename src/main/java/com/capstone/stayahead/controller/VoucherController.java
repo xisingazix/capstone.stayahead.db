@@ -1,12 +1,13 @@
 package com.capstone.stayahead.controller;
 
 import com.capstone.stayahead.exception.ResourceNotFoundException;
-import com.capstone.stayahead.model.Score;
+
 import com.capstone.stayahead.model.Sponsor;
-import com.capstone.stayahead.model.Users;
+
 import com.capstone.stayahead.model.Voucher;
 import com.capstone.stayahead.service.SponsorService;
 import com.capstone.stayahead.service.VoucherService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
-@RequestMapping("/voucher")
+@RequestMapping("/stayahead")
 public class VoucherController {
 
     @Autowired
@@ -27,20 +28,22 @@ public class VoucherController {
     SponsorService sponsorService;
 
     // Create Voucher
-    @PostMapping("")
-    public ResponseEntity<Object> save(@Valid @RequestBody Voucher voucher) throws ResourceNotFoundException{
-       Optional<Sponsor> sponsor = sponsorService.findById(voucher.getSponsor().getId());
-        if (sponsor.isEmpty()){
-            throw new ResourceNotFoundException("Required input is not valid");
-        }
+    @PostMapping("/admin/voucher/{id}")
+    public ResponseEntity<Object> save(@PathVariable("id") Integer id,
+                                       @Valid @RequestBody Voucher voucher)
+                                        throws ResourceNotFoundException{
+        Sponsor sponsor = sponsorService.findById(id)
+               .orElseThrow(()-> new ResourceNotFoundException("Required input is not valid"));
+        voucher.setSponsor(sponsor);
         voucherService.save(voucher);
-        return new ResponseEntity<>( "Voucher Created", HttpStatus.ACCEPTED) ;
+        return new ResponseEntity<>( voucher, HttpStatus.ACCEPTED) ;
     }
 
     // Update Voucher
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable("id") Integer id,@Valid @RequestBody Voucher voucher)
-            throws ResourceNotFoundException {
+    @PutMapping("/admin/voucher/{id}")
+    public ResponseEntity<Object> update(@PathVariable("id") Integer id,
+                                         @Valid @RequestBody Voucher voucher)
+                                        throws ResourceNotFoundException {
 
         Voucher _voucher = voucherService.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
@@ -53,7 +56,7 @@ public class VoucherController {
         return new ResponseEntity<>(_voucher, HttpStatus.OK); //201
     }
     // View all voucher
-    @GetMapping("")
+    @GetMapping("/admin/voucher")
     public ResponseEntity<Object> all() throws ResourceNotFoundException {
         List<Voucher> voucherList =  voucherService.findAll();
         if(  voucherList.isEmpty())
@@ -61,7 +64,7 @@ public class VoucherController {
         return new ResponseEntity<>( voucherList, HttpStatus.OK) ; //200
     }
     // view voucher by voucher id
-    @GetMapping("/{id}")
+    @GetMapping("/admin/voucher/{id}")
     public ResponseEntity<Object> byId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
 
         Voucher _voucher = voucherService.findById(id)
@@ -69,7 +72,7 @@ public class VoucherController {
         return new ResponseEntity<>(_voucher, HttpStatus.OK) ; //200
     }
     // view voucher by sponsor id
-    @GetMapping("/sponsor{id}")
+    @GetMapping("/admin/voucher/sponsor{id}")
     public ResponseEntity<Object> bySponsorId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
 
         List<Voucher> _voucher = voucherService.findBySponsorId(id);

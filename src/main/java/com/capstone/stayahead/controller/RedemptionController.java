@@ -1,26 +1,20 @@
 package com.capstone.stayahead.controller;
-
 import com.capstone.stayahead.exception.ResourceNotFoundException;
 import com.capstone.stayahead.model.*;
-
 import com.capstone.stayahead.service.RedemptionService;
 import com.capstone.stayahead.service.UserService;
 import com.capstone.stayahead.service.VoucherService;
-
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
-@RequestMapping("/redemption")
+@RequestMapping("/stayahead")
 public class RedemptionController {
 
     @Autowired
@@ -32,7 +26,7 @@ public class RedemptionController {
     @Autowired
     RedemptionService redemptionService;
 
-    @PostMapping("")
+    @PostMapping("/user/redemption")
     public ResponseEntity<Object> save(@Valid @RequestBody RedemptionId redemptionId)
                                         throws ResourceNotFoundException {
         // Check for Null Entry
@@ -48,14 +42,11 @@ public class RedemptionController {
         if(redemptionService.findById(redemptionId).isPresent())
             throw new ResourceNotFoundException("Voucher has been redeemed");
         // Redeem voucher
-        Redemption redemption = new Redemption(redemptionId);
-        redemption.setRedemptionId(redemptionId);
-        redemption.setUsers(users);
-        redemption.setVoucher(voucher);
+        Redemption redemption = new Redemption(redemptionId, voucher, users );
         redemptionService.save(redemption);
         return new ResponseEntity<>("Redemption Complete", HttpStatus.OK);
     }
-    @DeleteMapping("")
+    @DeleteMapping("/admin/redemption")
     public ResponseEntity<Object> deleteById(@Valid @RequestBody RedemptionId redemptionId)
                                     throws ResourceNotFoundException{
             Redemption redemption = redemptionService.findById(redemptionId)
@@ -85,7 +76,7 @@ public class RedemptionController {
 //        return new ResponseEntity<>("Redemption Updated", HttpStatus.OK);
 //        }
 //    }
-    @GetMapping("/search")
+    @GetMapping("/admin/redemption/search")
     public ResponseEntity<List<Redemption>> findById(@RequestParam(value ="userid", required = false ) Integer userid ,
                                             @RequestParam(value = "voucherid", required = false ) Integer voucherid ) {
 

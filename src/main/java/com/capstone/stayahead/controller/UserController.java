@@ -2,7 +2,6 @@ package com.capstone.stayahead.controller;
 
 import com.capstone.stayahead.exception.EmailAlreadyExistsException;
 import com.capstone.stayahead.exception.ResourceNotFoundException;
-
 import com.capstone.stayahead.model.Users;
 import com.capstone.stayahead.service.AuthService;
 import com.capstone.stayahead.service.ScoreService;
@@ -10,7 +9,6 @@ import com.capstone.stayahead.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/stayahead")
 public class UserController {
 
     @Autowired
@@ -31,8 +29,6 @@ public class UserController {
 
     @Autowired
     AuthService authService;
-    @Autowired
-    ScoreService scoreService;
 
     @PostMapping("/public/signup")
     public ResponseEntity<Object> signup(@Valid @RequestBody Users users) throws EmailAlreadyExistsException {
@@ -46,7 +42,7 @@ public class UserController {
         return new ResponseEntity<>(authService.signIn(users), HttpStatus.CREATED);
     }
 
-    @PutMapping("/public/user/update")  // creating a public endpoint for signins, user authenticated end point for updating, require token
+    @PutMapping("/user/update")  // creating a public endpoint for signins, user authenticated end point for updating, require token
     public ResponseEntity<Object> update(
             @RequestParam("data") String data,           // "{"username": "JohnDoe"}"
             @Nullable @RequestParam(value = "image" , required = false) MultipartFile image)  // Depends on token input to identify who is requesting an update
@@ -59,8 +55,8 @@ public class UserController {
     }
 
 
-    // End-point to View all users
-    @GetMapping("")
+    // End-point to View all users ,require token
+    @GetMapping("/getall")
     public ResponseEntity<Object> all(Users users) throws ResourceNotFoundException{
 
             List<Users> usersList = userService.findAll();

@@ -5,9 +5,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import org.springframework.scheduling.support.SimpleTriggerContext;
+import lombok.*;
+
 
 @Entity
+@Table(name = "sponsor")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter                             // Lombok generated getters (avoid @Data for entities; performance issues)
+@Setter
 public class Sponsor {
 
     @Id
@@ -32,54 +38,13 @@ public class Sponsor {
     )
     private String email;
 
-    public Sponsor() {
-    }
-
-    public Sponsor(Integer id, String name, String phone, String address, String email) {
-        this.id = id;
+    @Builder
+    public Sponsor( String name, String phone, String address, String email) {
         this.name = name;
         this.phone = phone;
         this.address = address;
         this.email = email;
     }
 
-    public Integer getId() {
-        return id;
-    }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

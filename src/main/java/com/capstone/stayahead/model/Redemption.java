@@ -4,6 +4,7 @@ package com.capstone.stayahead.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 
@@ -11,6 +12,11 @@ import java.time.LocalDate;
 
 
 @Entity
+@Table(name = "redemption")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter                             // Lombok generated getters (avoid @Data for entities; performance issues)
+@Setter
 public class Redemption {
 
 
@@ -37,41 +43,11 @@ public class Redemption {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "ddMMyyyy")
     private LocalDate redeemDate;
 
-    public Redemption() {
-    }
 
-    public Redemption(Voucher voucher, Users users) {
-        this.voucher = voucher;
-        this.users = users;
-
-    }
-
-    public Redemption(RedemptionId redemptionId) {
+    @Builder
+    public Redemption(RedemptionId redemptionId, Voucher voucher, Users users) {
         this.redemptionId = redemptionId;
-    }
-
-
-    public RedemptionId getRedemptionId() {
-        return redemptionId;
-    }
-
-    public void setRedemptionId(RedemptionId redemptionId) {
-        this.redemptionId = redemptionId;
-    }
-
-    public Voucher getVoucher() {
-        return voucher;
-    }
-
-    public void setVoucher(Voucher voucher) {
         this.voucher = voucher;
-    }
-
-    public Users getUsers() {
-        return users;
-    }
-
-    public void setUsers(Users users) {
         this.users = users;
     }
 

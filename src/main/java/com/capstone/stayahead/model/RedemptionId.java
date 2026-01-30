@@ -1,7 +1,7 @@
 package com.capstone.stayahead.model;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.criteria.CriteriaBuilder;
+
 
 import java.io.Serializable;
 import java.util.Objects;

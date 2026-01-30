@@ -2,6 +2,7 @@
 
     import com.fasterxml.jackson.annotation.JsonBackReference;
     import jakarta.persistence.*;
+    import lombok.*;
     import org.hibernate.annotations.OnDelete;
     import org.hibernate.annotations.OnDeleteAction;
     import org.hibernate.annotations.UpdateTimestamp;
@@ -9,6 +10,11 @@
     import java.time.LocalDateTime;
 
     @Entity
+    @Table(name = "score")
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter                             // Lombok generated getters (avoid @Data for entities; performance issues)
+    @Setter
     public class Score {
 
         @Id
@@ -28,43 +34,11 @@
         @Column(name = "updated_at", nullable = false)
         private LocalDateTime updatedAt;
 
+        @Builder
         public Score(Users users, Integer score) {
             this.users = users;
             this.score = score;
         }
 
-        public Score() {
-        }
 
-        public Users getUsers() {
-            return users;
-        }
-
-        public void setUsers(Users users) {
-            this.users = users;
-        }
-
-        public Integer getScore() {
-            return score;
-        }
-
-        public void setScore(Integer score) {
-            this.score = score;
-        }
-
-        public Integer getId() {
-            return id;
-        }
-
-        public void setId(Integer id) {
-            this.id = id;
-        }
-
-        public LocalDateTime getUpdatedAt() {
-            return updatedAt;
-        }
-
-        public void setUpdatedAt(LocalDateTime updatedAt) {
-            this.updatedAt = updatedAt;
-        }
-    }
+      }

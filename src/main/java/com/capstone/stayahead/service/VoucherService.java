@@ -1,7 +1,6 @@
 package com.capstone.stayahead.service;
 
 import com.capstone.stayahead.model.Voucher;
-import com.capstone.stayahead.repository.SponsorRepository;
 import com.capstone.stayahead.repository.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

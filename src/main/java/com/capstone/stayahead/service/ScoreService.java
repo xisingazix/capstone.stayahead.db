@@ -3,7 +3,6 @@ package com.capstone.stayahead.service;
 import com.capstone.stayahead.model.Score;
 import com.capstone.stayahead.repository.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -18,6 +18,7 @@ public class UserDto {
     private String password;
     private String firstName;
     private String lastName;
+    private Integer score;
     private String userProfileImage;
     private EnumRole role;
     private String token;

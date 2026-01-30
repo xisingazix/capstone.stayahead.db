@@ -1,6 +1,8 @@
 package com.capstone.stayahead.service;
 
+import com.capstone.stayahead.model.Score;
 import com.capstone.stayahead.model.Users;
+import com.capstone.stayahead.repository.ScoreRepository;
 import com.capstone.stayahead.repository.UsersRepository;
 import com.capstone.stayahead.dto.UserDto;
 import com.capstone.stayahead.exception.EmailAlreadyExistsException;
@@ -29,6 +31,8 @@ public class AuthService {
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
+    private ScoreRepository scoreRepository;
+    @Autowired
     private JwtUtils jwtUtils;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,8 +53,11 @@ public class AuthService {
                 .lastName(users.getLastName())
                 .password(passwordEncoder.encode((users.getPassword())))
                 .build();
+        Users createdUser =usersRepository.save(_users);
+        Score score = new Score(createdUser, users.getScore() !=null ?(users.getScore()).getScore() : 0);
+        scoreRepository.save(score);
+       return createdUser;
 
-       return usersRepository.save(_users);
     }
 
     @Transactional
@@ -97,7 +104,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Username will never be not inserted
-        existingUser.setEmail(users.getUsername());
+        existingUser.setEmail(users.getEmail());
 
         if (users.getPassword() != null)
             existingUser.setPassword(passwordEncoder.encode(users.getPassword()));
@@ -110,7 +117,7 @@ public class AuthService {
         if (image != null && !image.isEmpty() && existingUser.getId() != null ) {
 
             // Check file format to be image file
-            if(!Arrays.asList("image/jpeg", "image/png", "image/gif") .contains(image.getContentType())) {
+            if(!Arrays.asList("image/jpeg", "image/png", "image/gif").contains(image.getContentType())) {
                 throw new IllegalStateException("File must be an Image");
             }
 
@@ -122,6 +129,7 @@ public class AuthService {
             existingUser.setUserProfileImage(filePath);
             usersRepository.save(existingUser);
         }
+
 
         // package the data to return
         UserDto userDto = UserDto.builder()

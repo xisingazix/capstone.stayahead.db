@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     // manage the api paths
-    public static final String API_ENDPOINT = "/api/v1";
+    public static final String API_ENDPOINT = "/stayahead";
 
     @Autowired
     private UsersDetailsService usersDetailsService;

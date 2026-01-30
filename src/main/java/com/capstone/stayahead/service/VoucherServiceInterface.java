@@ -1,6 +1,5 @@
 package com.capstone.stayahead.service;
 
-import com.capstone.stayahead.model.Score;
 import com.capstone.stayahead.model.Voucher;
 
 import java.util.List;
