@@ -18,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 @Service
@@ -42,7 +44,9 @@ public class AuthService {
         }
 
         Users _users = Users.builder()
-                .email(users.getUsername())
+                .email(users.getEmail())
+                .firstName(users.getFirstName())
+                .lastName(users.getLastName())
                 .password(passwordEncoder.encode((users.getPassword())))
                 .build();
 
@@ -52,7 +56,7 @@ public class AuthService {
     @Transactional
     public UserDto signIn(Users users) throws ResourceAccessException{
 
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(users.getUsername(), users.getPassword());
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(users.getEmail(), users.getPassword());
         Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);
 
         /**
@@ -66,12 +70,12 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
         Users _users = (Users) authenticationResponse.getPrincipal();
 
-        String token = jwtUtils.generateToken(_users);
-        String refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), _users);
+        String token = jwtUtils.generateToken( _users);                 // email within userDetails,
+        String refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), _users);        // email within userDetails,
         Long expirationTime = jwtUtils.extractExpirationTime(token);
 
         UserDto userDto = UserDto.builder()
-                .email(_users.getUsername())  // Return athenticated user email
+                .email(_users.getUsername())  // Return authenticated user email
                 .token(token)                   // Return prepared token
                 .refreshToken(refreshToken)     // Return prepared refresh token
                 .expirationTime(expirationTime) // Return prepared expiry
@@ -103,9 +107,12 @@ public class AuthService {
         usersRepository.saveAndFlush(existingUser);
 
         // Use _user.getId() to ensure user is saved
-        if (image != null && !image.isEmpty() && existingUser.getId() != null) {
+        if (image != null && !image.isEmpty() && existingUser.getId() != null ) {
 
-            // TODO check if the file is a .jpg or .jpeg or .png
+            // Check file format to be image file
+            if(!Arrays.asList("image/jpeg", "image/png", "image/gif") .contains(image.getContentType())) {
+                throw new IllegalStateException("File must be an Image");
+            }
 
             String fileName = "profile_" + System.currentTimeMillis()+ "_" + image.getOriginalFilename();
             String filePath = uploadDir + File.separator + fileName;

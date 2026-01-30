@@ -71,7 +71,6 @@ public class Users implements UserDetails {
     private  Score score;
 
 
-
     // Transferred frm user authentication
     @ToString.Exclude                                      // Precision (field level): Prevents passwords from being printed
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Hide password in responses
@@ -83,33 +82,10 @@ public class Users implements UserDetails {
     private String userProfileImage;
 
 
-    public Users(String firstName, String lastName, String email, EnumRole role ) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.role = role;
-
-    }
-
-
-    @PrePersist
-    public void createScoreIfNil(){
-        if(this.score == null){
-            this.score = new Score(this, 0);
-        }
-    }
-
-
-    public void setScore(Score score) {
-        this.score = score;
-        score.setUsers(this);
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
-
 
     @Override
     public String getPassword() {
@@ -162,11 +138,15 @@ public class Users implements UserDetails {
                 String email,
                 String password,
                 EnumRole role,
+                String firstName,
+                String lastName,
                 String userProfileImage)
     {
         this.email = email;
         this.password = password;
         this.role = (role == null) ? EnumRole.USER : role;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.userProfileImage = userProfileImage;
     }
 

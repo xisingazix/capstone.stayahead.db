@@ -2,14 +2,11 @@ package com.capstone.stayahead.exception;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -99,29 +96,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        // Default generic message
-        String message = "Data integrity violation.";
-
-        // Get the deepest root cause message
-        String rootMsg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
-
-        // Check if the error is specifically about the 'email' unique constraint
-        // Note: The string "email" depends on your database column name
-        if (rootMsg != null && rootMsg.toLowerCase().contains("email")) {
-            message = "Email address is already in use.";
-        } else if (rootMsg != null && rootMsg.toLowerCase().contains("foreign key")) {
-            message = "This operation cannot be completed because it is linked to other data.";
-        }
-
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("error", message);
-        // Optional: errorResponse.put("details", rootMsg); // Useful for debugging
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }

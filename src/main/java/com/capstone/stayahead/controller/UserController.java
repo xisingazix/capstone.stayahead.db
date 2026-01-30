@@ -1,49 +1,63 @@
 package com.capstone.stayahead.controller;
 
+import com.capstone.stayahead.exception.EmailAlreadyExistsException;
 import com.capstone.stayahead.exception.ResourceNotFoundException;
-import com.capstone.stayahead.model.Score;
+
 import com.capstone.stayahead.model.Users;
+import com.capstone.stayahead.service.AuthService;
+import com.capstone.stayahead.service.ScoreService;
 import com.capstone.stayahead.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.IOException;
 import java.util.List;
-import java.util.logging.Handler;
+
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1")
 public class UserController {
 
     @Autowired
     UserService userService;
 
-    @PostMapping("")
-    public ResponseEntity<Object> save(@Valid @RequestBody Users users){
-        userService.save(users);
+    @Autowired
+    AuthService authService;
+    @Autowired
+    ScoreService scoreService;
 
-        return new ResponseEntity<>("User created", HttpStatus.CREATED) ; //201
+    @PostMapping("/public/signup")
+    public ResponseEntity<Object> signup(@Valid @RequestBody Users users) throws EmailAlreadyExistsException {
+
+        return new ResponseEntity<>(authService.signUp(users), HttpStatus.CREATED) ;
     }
 
-    //Get user by id
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable("id") Integer id, @RequestBody Users users)
-                                        throws ResourceNotFoundException {
+    @PostMapping("/public/signin")  // creating a public endpoint for signins
+    public ResponseEntity<Object> signin(@RequestBody Users users){
 
-            Users _users = userService.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
-            _users.setFirstName(users.getFirstName());
-            _users.setLastName(users.getLastName());
-            _users.setEmail(users.getEmail());
-
-            userService.save(_users);
-            return new ResponseEntity<>("User updated", HttpStatus.OK); //201
-
+        return new ResponseEntity<>(authService.signIn(users), HttpStatus.CREATED);
     }
+
+    @PutMapping("/public/user/update")  // creating a public endpoint for signins, user authenticated end point for updating, require token
+    public ResponseEntity<Object> update(
+            @RequestParam("data") String data,           // "{"username": "JohnDoe"}"
+            @Nullable @RequestParam(value = "image" , required = false) MultipartFile image)  // Depends on token input to identify who is requesting an update
+            throws IOException, ResourceNotFoundException {               // IOException handles image issues (File image exception , object matter exception)
+        // Convert "data" stored as a string into User object
+        ObjectMapper objectMapper = new ObjectMapper();
+        Users users = objectMapper.readValue(data, Users.class);
+
+        return new ResponseEntity<>(authService.update(users , image), HttpStatus.OK);
+    }
+
 
     // End-point to View all users
     @GetMapping("")
@@ -54,7 +68,6 @@ public class UserController {
                 throw new ResourceNotFoundException("Items not found.");
             }
             return new ResponseEntity<>(userService.findAll(), HttpStatus.OK); //200
-
     }
     // End-point to View users by Id( path variable)
     // Global exception handling
@@ -66,8 +79,9 @@ public class UserController {
 
         return new ResponseEntity<>(_users, HttpStatus.OK) ; //200
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletebyId(@PathVariable("id") Integer id) throws ResourceNotFoundException{
+    public ResponseEntity<Object> deleteById(@PathVariable("id") Integer id) throws ResourceNotFoundException{
 
         Users _users = userService.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
