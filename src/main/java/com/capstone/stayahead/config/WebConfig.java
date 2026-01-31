@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${origin.host}")
     private String originHost;
 
-    // "http://127.0.0.1:9876"
+    // "http://127.0.0.1:9999"
     private String strUrl = "http://";
 
     public static final String API_ENDPOINT = "/stayahead";
