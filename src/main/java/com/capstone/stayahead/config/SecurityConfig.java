@@ -38,7 +38,7 @@ public class SecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request -> request.requestMatchers(API_ENDPOINT.concat("/public/**"), API_ENDPOINT.concat("/uploads/**")).permitAll()
+                .authorizeHttpRequests(request -> request.requestMatchers(API_ENDPOINT.concat("/public/**"), API_ENDPOINT.concat("/user/**"), API_ENDPOINT.concat("/uploads/**")).permitAll()
                         .requestMatchers(API_ENDPOINT.concat("/user/**")).hasAnyAuthority("USER")
                         .requestMatchers(API_ENDPOINT.concat("/admin/**")).hasAnyAuthority("ADMIN")
                         .requestMatchers(API_ENDPOINT.concat("/restricted/**")).hasAnyAuthority("USER", "ADMIN")

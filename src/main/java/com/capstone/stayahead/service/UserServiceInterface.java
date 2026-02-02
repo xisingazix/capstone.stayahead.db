@@ -15,4 +15,6 @@ public interface UserServiceInterface {
 
     public Optional<Users> findById(Integer id);
 
+    public Optional<Users> findByEmail(String email);
+
 }

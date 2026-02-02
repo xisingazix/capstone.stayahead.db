@@ -35,4 +35,9 @@ public class UserService implements UserServiceInterface{
     public Optional<Users> findById(Integer id) {
         return usersRepository.findById(id);
     }
+
+    @Override
+    public Optional<Users> findByEmail(String email) {
+        return usersRepository.findByEmail(email);
+    }
 }
