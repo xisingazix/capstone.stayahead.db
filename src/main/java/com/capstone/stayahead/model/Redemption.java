@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Table(name = "redemption")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter                             // Lombok generated getters (avoid @Data for entities; performance issues)
+@Getter
 @Setter
 public class Redemption {
 

@@ -49,11 +49,11 @@ public class AuthService {
 
         Users _users = Users.builder()
                 .email(users.getEmail())
-                .firstName(users.getFirstName())
-                .lastName(users.getLastName())
                 .password(passwordEncoder.encode((users.getPassword())))
                 .build();
+
         Users createdUser =usersRepository.save(_users);
+
         Score score = new Score(createdUser, users.getScore() !=null ?(users.getScore()).getScore() : 0);
         scoreRepository.save(score);
        return createdUser;

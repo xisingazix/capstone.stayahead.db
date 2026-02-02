@@ -28,14 +28,10 @@ public class Users implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    @NotNull(message = "First name must not be empty.")
-    @Size(min = 2 , message = "First name must be 2 characters or more.")
+    @Column
     private String firstName;
 
-    @Column(nullable = false)
-    @NotNull(message = "Last name must not be empty.")
-    @Size(min = 2 , message = "Last name must be 2 characters or more.")
+    @Column
     private String lastName;
 
     @Column(nullable = false, unique = true)
