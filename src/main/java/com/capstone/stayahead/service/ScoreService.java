@@ -35,7 +35,7 @@ public class ScoreService implements ScoreServiceInterface{
         return scoreRepository.findById(id);
     }
 
-    public List<Score> getTopFiveHighScore (){
+    public List<Score> getTopFiveHighScore(){
         return scoreRepository.findTop5ByOrderByScoreDescUpdatedAtAsc();
     }
 

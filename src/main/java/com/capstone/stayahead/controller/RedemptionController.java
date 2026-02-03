@@ -1,7 +1,9 @@
 package com.capstone.stayahead.controller;
+import com.capstone.stayahead.dto.UserDto;
 import com.capstone.stayahead.exception.ResourceNotFoundException;
 import com.capstone.stayahead.model.*;
 import com.capstone.stayahead.service.RedemptionService;
+import com.capstone.stayahead.service.ScoreService;
 import com.capstone.stayahead.service.UserService;
 import com.capstone.stayahead.service.VoucherService;
 import jakarta.validation.Valid;
@@ -26,19 +28,28 @@ public class RedemptionController {
     @Autowired
     RedemptionService redemptionService;
 
+    @Autowired
+    ScoreService scoreService;
+
     @PostMapping("/user/redemption")
-    public ResponseEntity<Object> save(@Valid @RequestBody RedemptionId redemptionId)
+    public ResponseEntity<Object> save(@Valid @RequestBody UserDto userDto)
                                         throws ResourceNotFoundException {
         // Check for Null Entry
-        if(redemptionId.getUsersId() == null || redemptionId.getVoucherId() == null )
+        if(userDto.getUserid() == null || userDto.getVoucherId() == null )
             throw new ResourceNotFoundException("Missing Entry");
         // Check User table for user
-        Users users = userService.findById(redemptionId.getUsersId())
+        Users users = userService.findById(userDto.getUserid())
                 .orElseThrow(()->new ResourceNotFoundException("User not found"));
+        List<Score> top5 = scoreService.getTopFiveHighScore();
+        boolean isUserInTopFive = top5.stream()
+                .anyMatch(score -> score.getId().equals(userDto.getUserid()));
+        if(!isUserInTopFive)
+            throw new ResourceNotFoundException("User not in Top 5");
         // Check Voucher table for voucher
-        Voucher voucher = voucherService.findById(redemptionId.getVoucherId())
+        Voucher voucher = voucherService.findById(userDto.getVoucherId())
                 .orElseThrow(()->new ResourceNotFoundException("Voucher not found"));
         // Check Redemption table if redeemed
+        RedemptionId redemptionId = new RedemptionId(userDto.getUserid(),userDto.getVoucherId());
         if(redemptionService.findById(redemptionId).isPresent())
             throw new ResourceNotFoundException("Voucher has been redeemed");
         // Redeem voucher

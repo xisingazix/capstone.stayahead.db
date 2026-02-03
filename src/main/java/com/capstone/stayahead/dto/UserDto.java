@@ -11,8 +11,9 @@ import lombok.*;
 @Builder                                                    // Lombok builder pattern, resolving the "Constructor Nightmare"
 public class UserDto {
 
-
+    private Integer userid;
     private String email;
+    private Integer voucherId;
     @ToString.Exclude                                       // Precision (field level): Prevents passwords from being printed
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // Hide password in responses
     private String password;

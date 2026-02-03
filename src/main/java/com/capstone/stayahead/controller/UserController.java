@@ -1,14 +1,18 @@
 package com.capstone.stayahead.controller;
 
+import com.capstone.stayahead.dto.UserDto;
 import com.capstone.stayahead.exception.EmailAlreadyExistsException;
 import com.capstone.stayahead.exception.ResourceNotFoundException;
+import com.capstone.stayahead.model.Score;
 import com.capstone.stayahead.model.Users;
+
 import com.capstone.stayahead.service.AuthService;
 import com.capstone.stayahead.service.ScoreService;
 import com.capstone.stayahead.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +33,7 @@ public class UserController {
 
     @Autowired
     AuthService authService;
+
 
     @PostMapping("/public/signup")
     public ResponseEntity<Object> signup(@Valid @RequestBody Users users) throws EmailAlreadyExistsException {
@@ -75,6 +80,24 @@ public class UserController {
 
         return new ResponseEntity<>(_users, HttpStatus.OK) ; //200
     }
+    @GetMapping("/user/email")
+    public ResponseEntity<Object> byEmail(@RequestParam String email) throws ResourceNotFoundException{
+
+        Users existingUser = userService.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        UserDto userDto = UserDto.builder()
+                .userid(existingUser.getId())
+                .email(existingUser.getUsername())
+                .score(existingUser.getScore().getScore())
+                .userProfileImage(existingUser.getUserProfileImage())
+                .message("retrieval")
+                .build();
+
+        return new ResponseEntity<>(userDto, HttpStatus.OK) ; //200
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable("id") Integer id) throws ResourceNotFoundException{
