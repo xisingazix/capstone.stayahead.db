@@ -27,8 +27,8 @@ public class RedemptionService implements RedemptionServiceInterface{
 
 
     @Override
-    public void save(Redemption redemption) {
-        redemptionRepository.save(redemption);
+    public Redemption save(Redemption redemption) {
+       return redemptionRepository.save(redemption);
     }
 
     @Override

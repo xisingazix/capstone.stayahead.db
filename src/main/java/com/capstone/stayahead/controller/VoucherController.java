@@ -36,7 +36,7 @@ public class VoucherController {
                .orElseThrow(()-> new ResourceNotFoundException("Required input is not valid"));
         voucher.setSponsor(sponsor);
         voucherService.save(voucher);
-        return new ResponseEntity<>( voucher, HttpStatus.ACCEPTED) ;
+        return new ResponseEntity<>( "Voucher Created", HttpStatus.ACCEPTED) ;
     }
 
     // Update Voucher

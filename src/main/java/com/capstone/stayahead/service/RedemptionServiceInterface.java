@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface RedemptionServiceInterface {
 
-    public void save(Redemption redemption);
+    public Redemption save(Redemption redemption);
 
     public void deleteById(RedemptionId redemptionId);
 

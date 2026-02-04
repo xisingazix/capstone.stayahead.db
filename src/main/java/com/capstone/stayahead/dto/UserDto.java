@@ -5,6 +5,8 @@ import com.capstone.stayahead.model.EnumRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -25,6 +27,7 @@ public class UserDto {
     private String token;
     private String refreshToken;
     private Long expirationTime;
+    private LocalDate redeemDate;
     private String message;
 
     /*

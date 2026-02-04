@@ -32,30 +32,34 @@ public class RedemptionController {
     ScoreService scoreService;
 
     @PostMapping("/user/redemption")
-    public ResponseEntity<Object> save(@Valid @RequestBody UserDto userDto)
+    public ResponseEntity<Object> redeemVoucher(@Valid @RequestBody RedemptionId redemptionId)
                                         throws ResourceNotFoundException {
         // Check for Null Entry
-        if(userDto.getUserid() == null || userDto.getVoucherId() == null )
+        if(redemptionId.getUsersId() == null || redemptionId.getVoucherId() == null )
             throw new ResourceNotFoundException("Missing Entry");
         // Check User table for user
-        Users users = userService.findById(userDto.getUserid())
+        Users users = userService.findById(redemptionId.getUsersId())
                 .orElseThrow(()->new ResourceNotFoundException("User not found"));
         List<Score> top5 = scoreService.getTopFiveHighScore();
         boolean isUserInTopFive = top5.stream()
-                .anyMatch(score -> score.getId().equals(userDto.getUserid()));
+                .anyMatch(score -> score.getId().equals(users.getId()));
         if(!isUserInTopFive)
             throw new ResourceNotFoundException("User not in Top 5");
         // Check Voucher table for voucher
-        Voucher voucher = voucherService.findById(userDto.getVoucherId())
+        Voucher voucher = voucherService.findById(redemptionId.getVoucherId())
                 .orElseThrow(()->new ResourceNotFoundException("Voucher not found"));
         // Check Redemption table if redeemed
-        RedemptionId redemptionId = new RedemptionId(userDto.getUserid(),userDto.getVoucherId());
-        if(redemptionService.findById(redemptionId).isPresent())
+        RedemptionId _redemptionId = new RedemptionId(redemptionId.getUsersId(), redemptionId.getVoucherId());
+        if(redemptionService.findById(_redemptionId).isPresent())
             throw new ResourceNotFoundException("Voucher has been redeemed");
         // Redeem voucher
         Redemption redemption = new Redemption(redemptionId, voucher, users );
-        redemptionService.save(redemption);
-        return new ResponseEntity<>("Redemption Complete", HttpStatus.OK);
+        Redemption saved = redemptionService.save(redemption);
+        UserDto userDto = UserDto.builder()
+                .voucherId(voucher.getId())
+                .userid(users.getId())
+                .redeemDate(saved.getRedeemDate()).build();
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
     @DeleteMapping("/admin/redemption")
     public ResponseEntity<Object> deleteById(@Valid @RequestBody RedemptionId redemptionId)
@@ -87,11 +91,12 @@ public class RedemptionController {
 //        return new ResponseEntity<>("Redemption Updated", HttpStatus.OK);
 //        }
 //    }
-    @GetMapping("/admin/redemption/search")
+    @GetMapping("/user/redemption/search")
     public ResponseEntity<List<Redemption>> findById(@RequestParam(value ="userid", required = false ) Integer userid ,
                                             @RequestParam(value = "voucherid", required = false ) Integer voucherid ) {
 
         List<Redemption> redemptions = redemptionService.findByOptionalIds(userid, voucherid);
+
 
         return new ResponseEntity<>(redemptions, HttpStatus.OK);
     }
