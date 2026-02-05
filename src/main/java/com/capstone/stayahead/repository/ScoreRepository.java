@@ -13,4 +13,5 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
     List<Score> findTop5ByOrderByScoreDescUpdatedAtAsc();
 
+
 }

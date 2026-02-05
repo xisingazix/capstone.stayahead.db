@@ -14,4 +14,5 @@ public interface ScoreServiceInterface {
     public List<Score> findAll();
 
     public Optional<Score> findById(Integer id);
+
 }

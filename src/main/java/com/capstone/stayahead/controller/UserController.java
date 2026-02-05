@@ -34,11 +34,14 @@ public class UserController {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    ScoreService scoreService;
 
     @PostMapping("/public/signup")
     public ResponseEntity<Object> signup(@Valid @RequestBody Users users) throws EmailAlreadyExistsException {
+        Users _users = authService.signUp(users);
 
-        return new ResponseEntity<>(authService.signUp(users), HttpStatus.CREATED) ;
+        return new ResponseEntity<>(_users, HttpStatus.CREATED) ;
     }
 
     @PostMapping("/public/signin")  // creating a public endpoint for signins
